@@ -1,5 +1,7 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import type { ShoeResponseDTO } from '../pages/type';
+import type { RootState } from '../redux/store/store';
 
 interface ShoeCardProps {
   shoe: ShoeResponseDTO;
@@ -8,6 +10,14 @@ interface ShoeCardProps {
 }
 
 export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarning }) => {
+  const { user } = useSelector((state: RootState) => state.authSlice);
+
+  const handleProtectedAction = (actionName: string) => {
+    if (!user) {
+      onAuthWarning(actionName);
+    }
+  };
+
   return (
     <div style={{
       backgroundColor: '#ffffff',
@@ -68,7 +78,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
         {/* Buttons */}
         <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <button 
-            onClick={() => onAuthWarning("Thêm sản phẩm vào giỏ hàng")}
+            onClick={() => handleProtectedAction("Thêm sản phẩm vào giỏ hàng")}
             style={{
               padding: '8px 0',
               fontSize: '12px',
@@ -83,7 +93,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
             Thêm giỏ
           </button>
           <button 
-            onClick={() => onAuthWarning("Đặt mua hàng ngay")}
+            onClick={() => handleProtectedAction("Đặt mua hàng ngay")}
             style={{
               padding: '8px 0',
               fontSize: '12px',

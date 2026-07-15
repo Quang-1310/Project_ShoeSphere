@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import ra.edu.shoesphere.model.dto.request.UserRequestDTO;
 import ra.edu.shoesphere.model.dto.response.UserResponseDTO;
 import ra.edu.shoesphere.model.entity.User;
+import ra.edu.shoesphere.model.entity.enums.RoleEnum;
+import ra.edu.shoesphere.repository.RefreshTokenRepository;
 import ra.edu.shoesphere.repository.UserRepository;
 import ra.edu.shoesphere.service.UserService;
 
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public Page<UserResponseDTO> getUsers(Integer page, Integer pageSize, String email) {
@@ -49,6 +52,49 @@ public class UserServiceImpl implements UserService {
         user.setStatus(requestDTO.getStatus());
         User updatedUser = userRepository.save(user);
         return mapToResponseDTO(updatedUser);
+    }
+
+    @Override
+    public Page<UserResponseDTO> getCustomers(Integer page, Integer pageSize, String email) {
+        String searchEmail = (email != null && !email.trim().isEmpty()) ? email.trim() : null;
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return userRepository.findCustomersWithOptionalEmail(RoleEnum.CUSTOMER, searchEmail, pageable)
+                .map(this::mapToResponseDTO);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDTO toggleCustomerStatus(Long userId) {
+        User user = findActiveCustomer(userId);
+        user.setStatus(!user.getStatus());
+
+        if (!user.getStatus()) {
+            revokeAllRefreshTokens(user);
+        }
+
+        return mapToResponseDTO(userRepository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteCustomer(Long userId) {
+        User user = findActiveCustomer(userId);
+        user.setIsDeleted(true);
+        user.setStatus(false);
+        revokeAllRefreshTokens(user);
+        userRepository.save(user);
+    }
+
+    private User findActiveCustomer(Long userId) {
+        return userRepository.findByIdAndRoleAndIsDeletedFalse(userId, RoleEnum.CUSTOMER)
+                .orElseThrow(() -> new IllegalArgumentException("Customer account was not found."));
+    }
+
+    private void revokeAllRefreshTokens(User user) {
+        refreshTokenRepository.findByUser(user).forEach(token -> {
+            token.setRevoked(true);
+            token.setExpired(true);
+        });
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {

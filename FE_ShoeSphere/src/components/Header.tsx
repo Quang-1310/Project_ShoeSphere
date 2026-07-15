@@ -1,5 +1,11 @@
+
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { logoutUserSession } from '../api/loginAPI';
+import { logout } from '../redux/slices/authSlice';
+import type { RootState } from '../redux/store/store';
 
 interface HeaderProps {
   onAuthWarning: (actionName: string) => void;
@@ -7,7 +13,33 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.authSlice);
 
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: 'Xác nhận đăng xuất?',
+      text: 'Bạn sẽ cần đăng nhập lại để tiếp tục mua sắm.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Đăng xuất',
+      cancelButtonText: 'Hủy',
+      confirmButtonColor: '#ef4444',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      await logoutUserSession();
+    } catch (error) {
+      console.error('Không thể thông báo đăng xuất đến máy chủ:', error);
+    } finally {
+      dispatch(logout());
+      navigate('/login');
+    }
+  };
   return (
     <header style={{
       // sticky: 'top',
@@ -42,7 +74,11 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button 
-            onClick={() => onAuthWarning("Xem giỏ hàng")}
+            onClick={() => {
+              if (!user) {
+                onAuthWarning("Xem giỏ hàng");
+              }
+            }}
             style={{
               position: 'relative',
               padding: '8px',
@@ -70,7 +106,8 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
               justifyContent: 'center'
             }}>0</span>
           </button>
-
+          {!user ? (
+            <>
           <button onClick={() => navigate('/register')} style={{
             padding: '6px 16px',
             fontSize: '14px',
@@ -94,6 +131,25 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
           }}>
             Đăng nhập
           </button>
+          </>
+          ) : (
+            /* NẾU ĐÃ ĐĂNG NHẬP THÀNH CÔNG -> HIỂN THỊ TÊN VÀ NÚT ĐĂNG XUẤT */
+            <>
+              <span>👋 Xin chào, <strong>{user.fullName}</strong></span>
+              <button onClick={handleLogout} style={{
+                padding: '6px 16px',
+                fontSize: '14px',
+                fontWeight: 500,
+                backgroundColor: '#ef4444',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}>
+                Đăng xuất
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

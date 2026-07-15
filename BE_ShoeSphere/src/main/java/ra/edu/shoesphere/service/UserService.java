@@ -13,6 +13,12 @@ public interface UserService {
 
     UserResponseDTO updateUserStatus(Long userId, UserRequestDTO requestDTO);
 
+    Page<UserResponseDTO> getCustomers(Integer page, Integer pageSize, String email);
+
+    UserResponseDTO toggleCustomerStatus(Long userId);
+
+    void softDeleteCustomer(Long userId);
+
 //    void changePassword(String email, ChangePasswordRequestDTO requestDTO);
 //
 //    String forgotPassword(ForgotPasswordRequestDTO requestDTO);

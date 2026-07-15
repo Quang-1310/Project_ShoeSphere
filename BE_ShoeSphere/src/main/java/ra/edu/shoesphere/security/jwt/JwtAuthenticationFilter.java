@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 //import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,12 +24,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService userDetailsService;
+    private final StringRedisTemplate redisTemplate;
 //    private final StringRedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String servletPath = request.getRequestURI();
         String contextPath = request.getContextPath() == null ? "" : request.getContextPath();
@@ -37,7 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             pathAfterContext = servletPath.substring(contextPath.length());
         }
 
-        if (pathAfterContext.startsWith("/api/v1/auth")) {
+            // Skip JWT validation cho các endpoint auth công khai (login, register, refresh)
+        // Nhưng KHÔNG skip cho /api/v1/auth/me vì nó yêu cầu xác thực
+        boolean isPublicAuthEndpoint = pathAfterContext.equals("/api/v1/auth/login")
+                || pathAfterContext.equals("/api/v1/auth/register")
+                || pathAfterContext.equals("/api/v1/auth/refresh");
+        if (isPublicAuthEndpoint) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,6 +62,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+
+        if (Boolean.TRUE.equals(redisTemplate.hasKey("blacklist:" + token))) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Token revoked.\"}");
+            return;
+        }
 
 //        String redisKey = "blacklist:" + token;
 //        Boolean isBlacklisted = redisTemplate.hasKey(redisKey);

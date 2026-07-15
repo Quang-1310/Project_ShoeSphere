@@ -4,14 +4,19 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ra.edu.shoesphere.exception.DataConflictException;
+import ra.edu.shoesphere.exception.ResourceNotFoundException;
 import ra.edu.shoesphere.model.dto.request.*;
 import ra.edu.shoesphere.model.dto.response.AuthResponse;
 import ra.edu.shoesphere.model.dto.response.JwtResponseDTO;
+import ra.edu.shoesphere.model.dto.response.UserResponseDTO;
 import ra.edu.shoesphere.model.entity.RefreshToken;
 import ra.edu.shoesphere.model.entity.User;
 import ra.edu.shoesphere.model.entity.enums.RoleEnum;
@@ -23,6 +28,7 @@ import ra.edu.shoesphere.service.AuthService;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -34,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
-//    private final StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void register(RegisterRequestDTO request) {
@@ -117,6 +123,59 @@ public class AuthServiceImpl implements AuthService {
         }
 
         throw new IllegalArgumentException("Mã Refresh Token không hợp lệ hoặc đã hết hạn!");
+    }
+
+    @Override
+    public UserResponseDTO getProfileMe() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin tài khoản đăng nhập!"));
+
+        String userRole = user.getRole().name();
+
+        // 4. Trả về đúng các trường dữ liệu FE yêu cầu
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .role(userRole) // Trả về chuỗi "ADMIN" hoặc "USER"
+                .status(user.getStatus())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void logout(String accessTokenHeader, TokenRefreshRequestDTO request) {
+        if (accessTokenHeader == null || !accessTokenHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header.");
+        }
+
+        String accessToken = accessTokenHeader.substring(7);
+        if (!jwtProvider.validateToken(accessToken)) {
+            throw new BadCredentialsException("Access token is invalid or expired.");
+        }
+
+        String email = jwtProvider.extractUsername(accessToken);
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(request.getRefreshToken())
+                .filter(token -> token.getUser().getEmail().equals(email))
+                .orElseThrow(() -> new BadCredentialsException("Refresh token does not belong to this session."));
+
+        // Refresh tokens are persisted in the database, so revoking this row blocks future refreshes.
+        refreshToken.setRevoked(true);
+        refreshToken.setExpired(true);
+
+        long expirationRemainingInMillis = jwtProvider.getExpirationRemaining(accessToken);
+        if (expirationRemainingInMillis > 0) {
+            redisTemplate.opsForValue().set(
+                    "blacklist:" + accessToken,
+                    "revoked",
+                    expirationRemainingInMillis,
+                    TimeUnit.MILLISECONDS
+            );
+        }
     }
 
 

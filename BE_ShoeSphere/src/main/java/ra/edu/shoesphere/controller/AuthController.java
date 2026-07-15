@@ -11,6 +11,7 @@ import ra.edu.shoesphere.model.dto.request.RegisterRequestDTO;
 import ra.edu.shoesphere.model.dto.request.TokenRefreshRequestDTO;
 import ra.edu.shoesphere.model.dto.response.ApiDataResponse;
 import ra.edu.shoesphere.model.dto.response.AuthResponse;
+import ra.edu.shoesphere.model.dto.response.UserResponseDTO;
 import ra.edu.shoesphere.service.AuthService;
 import ra.edu.shoesphere.service.UserService;
 
@@ -65,6 +66,35 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiDataResponse<UserResponseDTO>> getMyProfile() {
+        UserResponseDTO userProfile = authService.getProfileMe();
+
+        ApiDataResponse<UserResponseDTO> response = new ApiDataResponse<>(
+                true,
+                "Lấy thông tin tài khoản thành công!",
+                userProfile,
+                null,
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiDataResponse<Void>> logout(
+            @RequestHeader("Authorization") String tokenHeader,
+            @Valid @RequestBody TokenRefreshRequestDTO request
+    ) {
+        authService.logout(tokenHeader, request);
+        return ResponseEntity.ok(new ApiDataResponse<>(
+                true,
+                "Logout successful",
+                null,
+                null,
+                HttpStatus.OK
+        ));
     }
 
 //    @PostMapping("/logout")

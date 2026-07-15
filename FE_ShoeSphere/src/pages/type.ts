@@ -32,3 +32,12 @@ export interface PageResponseDTO<T> {
   totalPages: number;
   isLast: boolean;
 }
+
+export interface UserResponseDTO {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: string; 
+  status: boolean;
+}
