@@ -12,7 +12,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     List<CartItem> findByUserOrderByIdDesc(User user);
 
-    Optional<CartItem> findByUserAndShoe(User user, Shoe shoe);
+    Optional<CartItem> findByUserAndShoeAndSize(User user, Shoe shoe, Integer size);
 
     Optional<CartItem> findByIdAndUser(Long id, User user);
 

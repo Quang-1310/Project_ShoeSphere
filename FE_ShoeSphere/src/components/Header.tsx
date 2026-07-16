@@ -7,6 +7,7 @@ import { logoutUserSession } from '../api/loginAPI';
 import { logout } from '../redux/slices/authSlice';
 import type { RootState } from '../redux/store/store';
 import { getCart } from '../api/cartAPI';
+import { ClipboardList } from 'lucide-react';
 
 interface HeaderProps {
   onAuthWarning: (actionName: string) => void;
@@ -87,6 +88,7 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
 
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {user && <button onClick={() => navigate('/my-orders')} title="Đơn hàng của tôi" style={{ padding: '8px', color: '#4b5563', background: 'none', border: 'none', cursor: 'pointer' }}><ClipboardList size={24} /></button>}
           <button 
             onClick={() => user ? navigate('/cart') : onAuthWarning("Xem giỏ hàng")}
             style={{

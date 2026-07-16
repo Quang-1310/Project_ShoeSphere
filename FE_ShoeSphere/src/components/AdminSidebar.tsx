@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { logoutUserSession } from '../api/loginAPI';
 
+
 export const AdminSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -12,6 +13,10 @@ export const AdminSidebar: React.FC = () => {
     {
       text: '👟 Quản lý sản phẩm',
       path: '/admin/products',
+    },
+    {
+      text: '📦 Quản lý đơn hàng',
+      path: '/admin/orders',
     },
     {
       text: '👥 Quản lý tài khoản',

@@ -5,6 +5,7 @@ import shoeSlice from "../slices/shoeSlice";
 import adminShoeSlice from '../slices/adminShoeSlice';
 import authSlice from "../slices/authSlice";
 import adminUserSlice from '../slices/adminUserSlice';
+import adminOrderSlice from '../slices/adminOrderSlice';
 
 export const store = configureStore({
     reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
         shoeSlice: shoeSlice,
         adminShoeSlice: adminShoeSlice,
         authSlice: authSlice,
-        adminUserSlice: adminUserSlice
+        adminUserSlice: adminUserSlice,
+        adminOrderSlice: adminOrderSlice
     }
 })
 

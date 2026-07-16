@@ -1,5 +1,6 @@
 package ra.edu.shoesphere.model.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -23,9 +24,9 @@ public class ShoeRequestDTO {
     @NotBlank(message = "Thương hiệu không được để trống")
     private String brand;
 
-    @NotNull(message = "Số lượng kho không được để trống")
-    @Min(value = 0, message = "Số lượng kho không được âm")
-    private Integer stockQuantity;
+    @NotEmpty(message = "Phải có ít nhất một size")
+    @Valid
+    private java.util.List<ra.edu.shoesphere.model.dto.ShoeSizeDTO> sizes;
 
     private Boolean status = true;
 }

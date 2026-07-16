@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 
-interface ShoeResponseDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  brand: string;
-  stockQuantity: number;
-  imageUrl: string;
-  status: boolean;
-}
+import type { ShoeResponseDTO } from "../pages/type";
 
 interface ModalProps {
   editingProduct: ShoeResponseDTO | null;
@@ -22,7 +13,7 @@ export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, 
     name: editingProduct?.name || '',
     brand: editingProduct?.brand || '',
     price: editingProduct?.price.toString() || '',
-    stockQuantity: editingProduct?.stockQuantity.toString() || '',
+    sizes: editingProduct?.sizes || [],
     description: editingProduct?.description || '',
     status: editingProduct ? editingProduct.status : true
   });
@@ -32,6 +23,22 @@ export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: name === 'status' ? value === 'true' : value }));
+  };
+
+  const handleAddSize = () => {
+    setFormData(prev => ({ ...prev, sizes: [...prev.sizes, { size: 39, stockQuantity: 0 }] }));
+  };
+
+  const handleSizeChange = (index: number, field: 'size' | 'stockQuantity', value: number) => {
+    const newSizes = [...formData.sizes];
+    newSizes[index] = { ...newSizes[index], [field]: value };
+    setFormData(prev => ({ ...prev, sizes: newSizes }));
+  };
+
+  const handleRemoveSize = (index: number) => {
+    const newSizes = [...formData.sizes];
+    newSizes.splice(index, 1);
+    setFormData(prev => ({ ...prev, sizes: newSizes }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +60,10 @@ export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (fileError) return;
+    if (formData.sizes.length === 0) {
+      alert("Vui lòng thêm ít nhất một kích cỡ (size) cho sản phẩm!");
+      return;
+    }
     onSubmit(formData, selectedFile);
   };
 
@@ -86,10 +97,20 @@ export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, 
               <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Giá bán *</label>
               <input type="number" name="price" required value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px' }} />
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Tồn kho *</label>
-              <input type="number" name="stockQuantity" required value={formData.stockQuantity} onChange={handleInputChange} style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px' }} />
-            </div>
+          </div>
+          <div>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', fontWeight: 'bold' }}>
+              Danh sách Kích cỡ (Size) *
+              <button type="button" onClick={handleAddSize} style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>+ Thêm Size</button>
+            </label>
+            {formData.sizes.map((s, idx) => (
+              <div key={idx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                <input type="number" placeholder="Size (vd: 40)" value={s.size} onChange={(e) => handleSizeChange(idx, 'size', parseInt(e.target.value))} required style={{ flex: 1, padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px' }} />
+                <input type="number" placeholder="Số lượng" value={s.stockQuantity} onChange={(e) => handleSizeChange(idx, 'stockQuantity', parseInt(e.target.value))} required style={{ flex: 1, padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px' }} />
+                <button type="button" onClick={() => handleRemoveSize(idx)} style={{ padding: '8px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>X</button>
+              </div>
+            ))}
+            {formData.sizes.length === 0 && <div style={{ fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>Chưa có size nào. Vui lòng bấm "+ Thêm Size".</div>}
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Mô tả</label>

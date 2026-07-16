@@ -1,8 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import type { ShoeResponseDTO } from '../pages/type';
-import type { RootState } from '../redux/store/store';
-import { addCartItem } from '../api/cartAPI';
+// import type { RootState } from '../redux/store/store';
+// import { addCartItem } from '../api/cartAPI';
+// import { createOrder } from '../api/orderAPI';
+// import { useNavigate } from 'react-router-dom';
 
 interface ShoeCardProps {
   shoe: ShoeResponseDTO;
@@ -10,15 +12,21 @@ interface ShoeCardProps {
   onAuthWarning: (actionName: string) => void;
 }
 
-export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarning }) => {
-  const { user } = useSelector((state: RootState) => state.authSlice);
+interface ShoeCardProps {
+  shoe: ShoeResponseDTO;
+  onSelect: (id: number) => void;
+  onAuthWarning: (actionName: string) => void;
+}
 
-  const handleProtectedAction = (actionName: string) => {
-    if (!user) {
-      onAuthWarning(actionName);
-    }
-  };
-  const handleAddCart = async () => { if (!user) return onAuthWarning('Thêm sản phẩm vào giỏ hàng'); await addCartItem(shoe.id); };
+export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect }) => {
+  // const { user } = useSelector((state: RootState) => state.authSlice);
+  // const navigate = useNavigate();
+
+  // const handleProtectedAction = (actionName: string) => {
+  //   if (!user) {
+  //     onAuthWarning(actionName);
+  //   }
+  // };
 
   return (
     <div style={{
@@ -78,28 +86,13 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
         </div>
 
         {/* Buttons */}
-        <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
           <button 
-            onClick={handleAddCart}
+            onClick={() => onSelect(shoe.id)}
             style={{
               padding: '8px 0',
-              fontSize: '12px',
-              fontWeight: 500,
-              border: '1px solid #2563eb',
-              color: '#2563eb',
-              backgroundColor: 'transparent',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            Thêm giỏ
-          </button>
-          <button 
-            onClick={() => handleProtectedAction("Đặt mua hàng ngay")}
-            style={{
-              padding: '8px 0',
-              fontSize: '12px',
-              fontWeight: 500,
+              fontSize: '14px',
+              fontWeight: 600,
               backgroundColor: '#2563eb',
               color: '#ffffff',
               border: 'none',
@@ -107,7 +100,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
               cursor: 'pointer'
             }}
           >
-            Đặt hàng
+            Xem chi tiết
           </button>
         </div>
       </div>

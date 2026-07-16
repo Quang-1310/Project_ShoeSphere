@@ -86,7 +86,7 @@ export const AdminProductPage: React.FC = () => {
       name: fields.name,
       brand: fields.brand,
       price: parseFloat(fields.price),
-      stockQuantity: parseInt(fields.stockQuantity),
+      sizes: fields.sizes.map((s: any) => ({ size: parseInt(s.size), stockQuantity: parseInt(s.stockQuantity) })),
       description: fields.description,
       status: fields.status,
     };

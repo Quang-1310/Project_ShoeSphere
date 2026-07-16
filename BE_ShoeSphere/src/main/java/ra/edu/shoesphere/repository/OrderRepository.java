@@ -13,4 +13,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByIdAndUser(Long id, User user);
 
+    List<Order> findByStatusOrderByCreatedAtDesc(ra.edu.shoesphere.model.entity.enums.OrderStatus status);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"orderItems"})
+    org.springframework.data.domain.Page<Order> findByStatus(ra.edu.shoesphere.model.entity.enums.OrderStatus status, org.springframework.data.domain.Pageable pageable);
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"orderItems"})
+    org.springframework.data.domain.Page<Order> findByIdEquals(Long id, org.springframework.data.domain.Pageable pageable);
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"orderItems"})
+    org.springframework.data.domain.Page<Order> findByStatusAndIdEquals(ra.edu.shoesphere.model.entity.enums.OrderStatus status, Long id, org.springframework.data.domain.Pageable pageable);
+    
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"orderItems"})
+    org.springframework.data.domain.Page<Order> findAllBy(org.springframework.data.domain.Pageable pageable);
 }

@@ -8,10 +8,13 @@ import ra.edu.shoesphere.exception.ResourceNotFoundException;
 import ra.edu.shoesphere.model.dto.request.ShoeRequestDTO;
 import ra.edu.shoesphere.model.dto.response.ShoeResponseDTO;
 import ra.edu.shoesphere.model.entity.Shoe;
+import ra.edu.shoesphere.model.entity.ShoeSize;
 import ra.edu.shoesphere.repository.ShoeRepository;
 import ra.edu.shoesphere.service.AdminShoeService;
 import ra.edu.shoesphere.service.CloudinaryService;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -40,11 +43,19 @@ public class AdminShoeServiceImpl implements AdminShoeService {
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .brand(request.getBrand())
-                .stockQuantity(request.getStockQuantity())
                 .imageUrl(relativeImageUrl) // Lưu "v17112345/shoesphere/nike.png" vào DB
                 .status(request.getStatus())
                 .isDeleted(false)
                 .build();
+                
+        if (request.getSizes() != null) {
+            List<ShoeSize> shoeSizes = request.getSizes().stream().map(dto -> ShoeSize.builder()
+                    .shoe(shoe)
+                    .size(dto.getSize())
+                    .stockQuantity(dto.getStockQuantity())
+                    .build()).collect(Collectors.toList());
+            shoe.setSizes(shoeSizes);
+        }
 
         Shoe savedShoe = shoeRepository.save(shoe);
         return mapToResponseDTO(savedShoe);
@@ -60,8 +71,17 @@ public class AdminShoeServiceImpl implements AdminShoeService {
         shoe.setDescription(request.getDescription());
         shoe.setPrice(request.getPrice());
         shoe.setBrand(request.getBrand());
-        shoe.setStockQuantity(request.getStockQuantity());
         shoe.setStatus(request.getStatus());
+
+        if (request.getSizes() != null) {
+            shoe.getSizes().clear();
+            List<ShoeSize> newSizes = request.getSizes().stream().map(dto -> ShoeSize.builder()
+                    .shoe(shoe)
+                    .size(dto.getSize())
+                    .stockQuantity(dto.getStockQuantity())
+                    .build()).collect(Collectors.toList());
+            shoe.getSizes().addAll(newSizes);
+        }
 
         // Nếu cập nhật ảnh mới
         if (image != null && !image.isEmpty()) {
@@ -107,7 +127,12 @@ public class AdminShoeServiceImpl implements AdminShoeService {
                 .description(shoe.getDescription())
                 .price(shoe.getPrice())
                 .brand(shoe.getBrand())
-                .stockQuantity(shoe.getStockQuantity())
+                .sizes(shoe.getSizes() != null ? shoe.getSizes().stream()
+                        .map(s -> ra.edu.shoesphere.model.dto.ShoeSizeDTO.builder()
+                                .size(s.getSize())
+                                .stockQuantity(s.getStockQuantity())
+                                .build())
+                        .collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .imageUrl(shoe.getImageUrl())
                 .status(shoe.getStatus())
                 .build();

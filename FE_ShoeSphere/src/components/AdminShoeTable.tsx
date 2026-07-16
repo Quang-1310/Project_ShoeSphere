@@ -1,15 +1,6 @@
 import React from 'react';
 
-interface ShoeResponseDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  brand: string;
-  stockQuantity: number;
-  imageUrl: string;
-  status: boolean;
-}
+import type { ShoeResponseDTO } from "../pages/type";
 
 interface TableProps {
   products: ShoeResponseDTO[];
@@ -28,6 +19,7 @@ export const AdminShoeTable: React.FC<TableProps> = ({ products, onEdit, onDelet
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Tên sản phẩm</th>
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Thương hiệu</th>
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Giá bán</th>
+            <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Kích cỡ (Size)</th>
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Tồn kho</th>
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db' }}>Trạng thái</th>
             <th style={{ padding: '12px 16px', borderBottom: '1px solid #d1d5db', textAlign: 'center' }}>Hành động</th>
@@ -48,7 +40,12 @@ export const AdminShoeTable: React.FC<TableProps> = ({ products, onEdit, onDelet
                 <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#111827' }}>{p.name}</td>
                 <td style={{ padding: '12px 16px' }}>{p.brand}</td>
                 <td style={{ padding: '12px 16px', color: '#b91c1c', fontWeight: 'bold' }}>{p.price.toLocaleString('vi-VN')} đ</td>
-                <td style={{ padding: '12px 16px' }}>{p.stockQuantity} đôi</td>
+                <td style={{ padding: '12px 16px' }}>
+                  {p.sizes && p.sizes.length > 0 ? p.sizes.map(s => <div key={s.size} style={{ padding: '2px 0' }}>Size {s.size}</div>) : <span style={{ color: '#9ca3af' }}>N/A</span>}
+                </td>
+                <td style={{ padding: '12px 16px' }}>
+                  {p.sizes && p.sizes.length > 0 ? p.sizes.map(s => <div key={s.size} style={{ padding: '2px 0' }}>{s.stockQuantity} đôi</div>) : <span style={{ color: '#9ca3af' }}>N/A</span>}
+                </td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{ padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', backgroundColor: p.status ? '#d1fae5' : '#fee2e2', color: p.status ? '#065f46' : '#991b1b' }}>
                     {p.status ? 'Đang bán' : 'Dừng bán'}
@@ -62,7 +59,7 @@ export const AdminShoeTable: React.FC<TableProps> = ({ products, onEdit, onDelet
             ))
           ) : (
             <tr>
-              <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Không tìm thấy sản phẩm nào!</td>
+              <td colSpan={9} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Không tìm thấy sản phẩm nào!</td>
             </tr>
           )}
         </tbody>

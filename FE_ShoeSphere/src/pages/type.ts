@@ -13,13 +13,18 @@ export interface ApiDataResponse<T> {
   status: string;
 }
 
+export interface ShoeSizeDTO {
+  size: number;
+  stockQuantity: number;
+}
+
 export interface ShoeResponseDTO {
   id: number;
   name: string;
   description: string;
   price: number;
   brand: string;
-  stockQuantity: number;
+  sizes: ShoeSizeDTO[];
   imageUrl: string;
   status: boolean;
 }

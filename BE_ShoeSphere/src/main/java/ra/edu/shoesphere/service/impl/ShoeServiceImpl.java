@@ -63,7 +63,12 @@ public class ShoeServiceImpl implements ShoeService {
                 .brand(shoe.getBrand())
                 .description(shoe.getDescription())
                 .price(shoe.getPrice())
-                .stockQuantity(shoe.getStockQuantity())
+                .sizes(shoe.getSizes() != null ? shoe.getSizes().stream()
+                        .map(s -> ra.edu.shoesphere.model.dto.ShoeSizeDTO.builder()
+                                .size(s.getSize())
+                                .stockQuantity(s.getStockQuantity())
+                                .build())
+                        .collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .imageUrl(fullImageUrl)
                 .status(shoe.getStatus())
                 .build();

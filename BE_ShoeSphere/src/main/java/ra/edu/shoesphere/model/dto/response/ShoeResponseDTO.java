@@ -14,7 +14,7 @@ public class ShoeResponseDTO {
     private String description;
     private BigDecimal price;
     private String brand;
-    private Integer stockQuantity;
+    private java.util.List<ra.edu.shoesphere.model.dto.ShoeSizeDTO> sizes;
     private String imageUrl;
     private Boolean status;
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Header } from '../components/Header';
 import { getCart, removeCartItem, updateCartItem, type CartItem } from '../api/cartAPI';
+import { createOrder } from '../api/orderAPI';
 
 export const CartPage = () => {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -48,11 +49,26 @@ export const CartPage = () => {
   };
 
   // Xử lý khi nhấn nút Đặt hàng
-  const handleCheckout = () => {
-    if (selected.length) {
-      Swal.fire('Chức năng đặt hàng sẽ được triển khai ở bước tiếp theo.');
-    } else {
-      Swal.fire('Hãy chọn sản phẩm');
+  const handleCheckout = async () => {
+    if (!selected.length) return void Swal.fire('Hãy chọn sản phẩm');
+    try { 
+      await createOrder(selected); 
+      await Swal.fire({ icon: 'success', title: 'Đặt hàng thành công' }); 
+      nav('/my-orders'); 
+    }
+    catch (error: any) { 
+      const msg = error.response?.data?.message || String(error);
+      if (msg.includes("Delivery information is required") || msg.includes("địa chỉ")) {
+        Swal.fire({ 
+          icon: 'warning', 
+          title: 'Thiếu địa chỉ', 
+          text: 'Vui lòng cập nhật thông tin giao hàng trong hồ sơ của bạn.' 
+        }).then(() => {
+          nav('/profile');
+        });
+      } else {
+        Swal.fire({ icon: 'error', title: 'Không thể đặt hàng', text: msg }); 
+      }
     }
   };
 
@@ -87,6 +103,7 @@ export const CartPage = () => {
 
           <div style={{ flex: 1 }}>
             <b>{x.name}</b>
+            <p style={{ margin: '4px 0', color: '#6b7280', fontSize: '14px' }}>Size: {x.size}</p>
             <p>{x.price.toLocaleString('vi-VN')} đ</p>
           </div>
 

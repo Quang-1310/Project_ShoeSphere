@@ -27,9 +27,10 @@ public class Shoe {
 
     private String brand;
 
-    private Integer stockQuantity;
-
     private String imageUrl;
+
+    @OneToMany(mappedBy = "shoe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ShoeSize> sizes = new java.util.ArrayList<>();
 
     private Boolean status;
 

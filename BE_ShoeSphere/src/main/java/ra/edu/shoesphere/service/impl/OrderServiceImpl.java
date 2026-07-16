@@ -43,17 +43,22 @@ public class OrderServiceImpl implements OrderService {
   o.setReceiverName(u.getFullName());
   o.setReceiverPhone(u.getPhone());
   o.setDeliveryAddress(u.getAddress());
-  o.setStatus(OrderStatus.CONFIRMED);
+  o.setStatus(OrderStatus.PENDING_CONFIRMATION);
   o.setTotalAmount(BigDecimal.ZERO);
 
   // Kiểm tra tồn kho và tính tổng tiền đơn hàng
   for (CartItem c : items) {
    Shoe s = c.getShoe();
-   if (s.getStockQuantity() < c.getQuantity()) {
-    throw new IllegalArgumentException("Insufficient stock: " + s.getName());
+   ShoeSize shoeSize = s.getSizes().stream()
+           .filter(sz -> sz.getSize().equals(c.getSize()))
+           .findFirst()
+           .orElseThrow(() -> new IllegalArgumentException("Size not found for shoe: " + s.getName()));
+
+   if (shoeSize.getStockQuantity() < c.getQuantity()) {
+    throw new IllegalArgumentException("Insufficient stock for " + s.getName() + " size " + c.getSize());
    }
-   // Trừ số lượng tồn kho của giày
-   s.setStockQuantity(s.getStockQuantity() - c.getQuantity());
+   // Trừ số lượng tồn kho của size giày
+   shoeSize.setStockQuantity(shoeSize.getStockQuantity() - c.getQuantity());
 
    // Cộng dồn vào tổng tiền đơn hàng
    o.setTotalAmount(o.getTotalAmount().add(
@@ -71,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
    i.setShoe(c.getShoe());
    i.setShoeName(c.getShoe().getName());
    i.setUnitPrice(c.getShoe().getPrice());
+   i.setSize(c.getSize());
    i.setQuantity(c.getQuantity());
    orderItems.save(i);
   }
@@ -84,6 +90,12 @@ public class OrderServiceImpl implements OrderService {
  @Override
  public List<Order> mine(String email) {
   return orders.findByUserOrderByCreatedAtDesc(u(email));
+ }
+
+ @Override
+ public Order detail(String email, Long id) {
+  return orders.findByIdAndUser(id, u(email))
+          .orElseThrow(() -> new IllegalArgumentException("Order not found."));
  }
 
  @Override
