@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { logoutUserSession } from '../api/loginAPI';
 import { logout } from '../redux/slices/authSlice';
 import type { RootState } from '../redux/store/store';
+import { getCart } from '../api/cartAPI';
 
 interface HeaderProps {
   onAuthWarning: (actionName: string) => void;
@@ -15,6 +16,19 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.authSlice);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCartCount(0);
+      return;
+    }
+
+    getCart()
+      .then((items) => setCartCount(items.reduce((total, item) => total + item.quantity, 0)))
+      .catch(() => setCartCount(0));
+  }, [user]);
 
   const handleLogout = async () => {
     const result = await Swal.fire({
@@ -67,18 +81,14 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
           letterSpacing: '0.05em',
           color: '#2563eb',
           cursor: 'pointer'
-        }}>
+        }} onClick={() => navigate('/')}>
           SHOESPHERE
         </div>
 
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button 
-            onClick={() => {
-              if (!user) {
-                onAuthWarning("Xem giỏ hàng");
-              }
-            }}
+            onClick={() => user ? navigate('/cart') : onAuthWarning("Xem giỏ hàng")}
             style={{
               position: 'relative',
               padding: '8px',
@@ -104,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
-            }}>0</span>
+            }}>{cartCount}</span>
           </button>
           {!user ? (
             <>
@@ -136,6 +146,12 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
             /* NẾU ĐÃ ĐĂNG NHẬP THÀNH CÔNG -> HIỂN THỊ TÊN VÀ NÚT ĐĂNG XUẤT */
             <>
               <span>👋 Xin chào, <strong>{user.fullName}</strong></span>
+              <button onClick={() => navigate('/delivery-profile')} style={{
+                padding: '6px 16px', fontSize: '14px', fontWeight: 500,
+                border: '1px solid #2563eb', borderRadius: '8px', backgroundColor: '#ffffff', color: '#2563eb', cursor: 'pointer'
+              }}>
+                Thông tin giao hàng
+              </button>
               <button onClick={handleLogout} style={{
                 padding: '6px 16px',
                 fontSize: '14px',

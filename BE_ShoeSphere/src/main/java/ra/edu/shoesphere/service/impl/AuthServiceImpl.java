@@ -141,6 +141,7 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
+                .address(user.getAddress())
                 .role(userRole) // Trả về chuỗi "ADMIN" hoặc "USER"
                 .status(user.getStatus())
                 .build();

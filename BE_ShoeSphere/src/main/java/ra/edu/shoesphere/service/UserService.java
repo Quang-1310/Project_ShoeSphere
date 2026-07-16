@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 //import ra.edu.shoesphere.model.dto.request.ChangePasswordRequestDTO;
 //import ra.edu.shoesphere.model.dto.request.ForgotPasswordRequestDTO;
 import ra.edu.shoesphere.model.dto.request.UserRequestDTO;
+import ra.edu.shoesphere.model.dto.request.DeliveryInfoRequestDTO;
 import ra.edu.shoesphere.model.dto.response.UserResponseDTO;
 
 public interface UserService {
@@ -18,6 +19,8 @@ public interface UserService {
     UserResponseDTO toggleCustomerStatus(Long userId);
 
     void softDeleteCustomer(Long userId);
+
+    UserResponseDTO updateMyDeliveryInfo(String email, DeliveryInfoRequestDTO request);
 
 //    void changePassword(String email, ChangePasswordRequestDTO requestDTO);
 //

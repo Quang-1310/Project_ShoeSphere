@@ -5,6 +5,8 @@ import { ShoeStorePage } from "../pages/ShoeStorePage";
 import { AdminProductPage } from "../pages/AdminProductPage";
 import { AdminLayout } from "../layout/AdminLayout";
 import { AdminAccountPage } from "../pages/AdminAccountPage";
+import { DeliveryProfilePage } from "../pages/DeliveryProfilePage";
+import { CartPage } from "../pages/CartPage";
 
 
 export const index = createBrowserRouter([
@@ -13,6 +15,8 @@ export const index = createBrowserRouter([
     {path: "/", element: <ShoeStorePage/>},
     {path: "*", element: <Navigate to = "/" replace/>},
     {path: "/shoes", element: <ShoeStorePage/>},
+    {path: "/delivery-profile", element: <DeliveryProfilePage />},
+    {path: "/cart", element: <CartPage />},
 
     {
     element: <AdminLayout />, // Khung Layout chứa Sidebar bên trái và tự động check Token

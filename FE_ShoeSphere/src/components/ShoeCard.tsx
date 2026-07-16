@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import type { ShoeResponseDTO } from '../pages/type';
 import type { RootState } from '../redux/store/store';
+import { addCartItem } from '../api/cartAPI';
 
 interface ShoeCardProps {
   shoe: ShoeResponseDTO;
@@ -17,6 +18,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
       onAuthWarning(actionName);
     }
   };
+  const handleAddCart = async () => { if (!user) return onAuthWarning('Thêm sản phẩm vào giỏ hàng'); await addCartItem(shoe.id); };
 
   return (
     <div style={{
@@ -78,7 +80,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect, onAuthWarnin
         {/* Buttons */}
         <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <button 
-            onClick={() => handleProtectedAction("Thêm sản phẩm vào giỏ hàng")}
+            onClick={handleAddCart}
             style={{
               padding: '8px 0',
               fontSize: '12px',

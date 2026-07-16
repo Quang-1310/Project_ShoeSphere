@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 //import ra.edu.shoesphere.model.dto.request.ChangePasswordRequestDTO;
 //import ra.edu.shoesphere.model.dto.request.ForgotPasswordRequestDTO;
 import ra.edu.shoesphere.model.dto.request.UserRequestDTO;
+import ra.edu.shoesphere.model.dto.request.DeliveryInfoRequestDTO;
 import ra.edu.shoesphere.model.dto.response.UserResponseDTO;
 import ra.edu.shoesphere.model.entity.User;
 import ra.edu.shoesphere.model.entity.enums.RoleEnum;
@@ -85,6 +86,17 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    @Transactional
+    public UserResponseDTO updateMyDeliveryInfo(String email, DeliveryInfoRequestDTO request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User was not found."));
+        user.setFullName(request.getFullName().trim());
+        user.setPhone(request.getPhone().trim());
+        user.setAddress(request.getAddress().trim());
+        return mapToResponseDTO(userRepository.save(user));
+    }
+
     private User findActiveCustomer(Long userId) {
         return userRepository.findByIdAndRoleAndIsDeletedFalse(userId, RoleEnum.CUSTOMER)
                 .orElseThrow(() -> new IllegalArgumentException("Customer account was not found."));
@@ -103,6 +115,7 @@ public class UserServiceImpl implements UserService {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
+                .address(user.getAddress())
                 .role(user.getRole().name())
                 .status(user.getStatus())
                 .build();

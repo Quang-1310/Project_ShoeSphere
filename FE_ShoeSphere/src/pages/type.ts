@@ -38,6 +38,7 @@ export interface UserResponseDTO {
   fullName: string;
   email: string;
   phone: string;
+  address: string | null;
   role: string; 
   status: boolean;
 }
