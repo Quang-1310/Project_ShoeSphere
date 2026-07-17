@@ -1,8 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
+
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --accent-color: #ef4444;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility Classes */
+.fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Stagger delays for grid items */
+.fade-in-up:nth-child(1) { animation-delay: 0.05s; }
+.fade-in-up:nth-child(2) { animation-delay: 0.1s; }
+.fade-in-up:nth-child(3) { animation-delay: 0.15s; }
+.fade-in-up:nth-child(4) { animation-delay: 0.2s; }
+.fade-in-up:nth-child(5) { animation-delay: 0.25s; }
+.fade-in-up:nth-child(6) { animation-delay: 0.3s; }
+.fade-in-up:nth-child(7) { animation-delay: 0.35s; }
+.fade-in-up:nth-child(8) { animation-delay: 0.4s; }
+.fade-in-up:nth-child(9) { animation-delay: 0.45s; }
+.fade-in-up:nth-child(10) { animation-delay: 0.5s; }
+.fade-in-up:nth-child(11) { animation-delay: 0.55s; }
+.fade-in-up:nth-child(12) { animation-delay: 0.6s; }
+
+.pop-in {
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-effect {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.img-zoom {
+  transition: transform 0.5s ease !important;
+}
+
+.hover-lift:hover .img-zoom {
+  transform: scale(1.05);
+}
+
+.btn-hover {
+  transition: all 0.2s ease !important;
+}
+.btn-hover:hover {
+  transform: scale(1.03);
+  filter: brightness(1.1);
+}
+.btn-hover:active {
+  transform: scale(0.97);
+}
+
+/* Animated gradient text for brand logo */
+.text-gradient {
+  background: linear-gradient(90deg, #2563eb, #8b5cf6, #2563eb);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gradientFlow 3s linear infinite;
+}
+
+@keyframes gradientFlow {
+  to {
+    background-position: 200% center;
+  }
 }

@@ -61,12 +61,10 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
     }
   };
   return (
-    <header style={{
+    <header className="glass-effect" style={{
       position: 'sticky',
       top: 0,
       zIndex: 40,
-      backgroundColor: '#ffffff',
-      borderBottom: '1px solid #e5e7eb',
       boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
     }}>
       <div style={{
@@ -79,11 +77,10 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
         justifyContent: 'space-between'
       }}>
         {/* Logo */}
-        <div style={{
-          fontSize: '24px',
+        <div className="text-gradient" style={{
+          fontSize: '28px',
           fontWeight: 900,
           letterSpacing: '0.05em',
-          color: '#2563eb',
           cursor: 'pointer'
         }} onClick={() => navigate('/')}>
           SHOESPHERE
@@ -91,8 +88,9 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
 
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {user && <button onClick={() => navigate('/my-orders')} title="Đơn hàng của tôi" style={{ padding: '8px', color: '#4b5563', background: 'none', border: 'none', cursor: 'pointer' }}><ClipboardList size={24} /></button>}
+          {user && <button className="btn-hover" onClick={() => navigate('/my-orders')} title="Đơn hàng của tôi" style={{ padding: '8px', color: '#4b5563', background: 'none', border: 'none', cursor: 'pointer' }}><ClipboardList size={24} /></button>}
           <button 
+            className="btn-hover"
             onClick={() => user ? navigate('/cart') : onAuthWarning("Xem giỏ hàng")}
             style={{
               position: 'relative',
@@ -123,21 +121,22 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
           </button>
           {!user ? (
             <>
-          <button onClick={() => navigate('/register')} style={{
-            padding: '6px 16px',
+          <button className="btn-hover" onClick={() => navigate('/register')} style={{
+            padding: '8px 20px',
             fontSize: '14px',
-            fontWeight: 500,
+            fontWeight: 600,
             border: '1px solid #d1d5db',
             borderRadius: '8px',
             backgroundColor: '#ffffff',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            color: '#374151'
           }}>
             Đăng ký
           </button>
-          <button onClick={() => navigate('/login')} style={{
-            padding: '6px 16px',
+          <button className="btn-hover" onClick={() => navigate('/login')} style={{
+            padding: '8px 20px',
             fontSize: '14px',
-            fontWeight: 500,
+            fontWeight: 600,
             backgroundColor: '#2563eb',
             color: '#ffffff',
             border: 'none',
@@ -151,16 +150,16 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
             /* NẾU ĐÃ ĐĂNG NHẬP THÀNH CÔNG -> HIỂN THỊ TÊN VÀ NÚT ĐĂNG XUẤT */
             <>
               <span>👋 Xin chào, <strong>{user.fullName}</strong></span>
-              <button onClick={() => navigate('/delivery-profile')} style={{
-                padding: '6px 16px', fontSize: '14px', fontWeight: 500,
+              <button className="btn-hover" onClick={() => navigate('/delivery-profile')} style={{
+                padding: '8px 20px', fontSize: '14px', fontWeight: 600,
                 border: '1px solid #2563eb', borderRadius: '8px', backgroundColor: '#ffffff', color: '#2563eb', cursor: 'pointer'
               }}>
                 Thông tin giao hàng
               </button>
-              <button onClick={handleLogout} style={{
-                padding: '6px 16px',
+              <button className="btn-hover" onClick={handleLogout} style={{
+                padding: '8px 20px',
                 fontSize: '14px',
-                fontWeight: 500,
+                fontWeight: 600,
                 backgroundColor: '#ef4444',
                 color: '#ffffff',
                 border: 'none',

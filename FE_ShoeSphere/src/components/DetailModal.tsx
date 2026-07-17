@@ -75,7 +75,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ shoe, onClose, onAuthW
         display: 'grid',
         gridTemplateColumns: 'window.innerWidth > 640 ? "1fr 1fr" : "1fr"',
         gap: '24px'
-      }} className="responsive-modal-grid">
+      }} className="responsive-modal-grid pop-in">
         
         {/* Nút đóng X */}
         <button onClick={onClose} style={{
@@ -143,8 +143,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ shoe, onClose, onAuthW
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '24px' }}>
-            <button onClick={addToCart} style={{ padding: '10px 0', backgroundColor: '#f3f4f6', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Thêm vào giỏ</button>
-            <button onClick={buyNow} style={{ padding: '10px 0', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Mua ngay</button>
+            <button className="btn-hover" onClick={addToCart} style={{ padding: '10px 0', backgroundColor: '#f3f4f6', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Thêm vào giỏ</button>
+            <button className="btn-hover" onClick={buyNow} style={{ padding: '10px 0', backgroundColor: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>Mua ngay</button>
           </div>
         </div>
 

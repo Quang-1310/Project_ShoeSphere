@@ -29,14 +29,14 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect }) => {
   // };
 
   return (
-    <div style={{
+    <div className="hover-lift fade-in-up" style={{
       backgroundColor: '#ffffff',
       borderRadius: '12px',
       border: '1px solid #f3f4f6',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
-      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
     }}>
       {/* Khung Ảnh tỉ lệ 1:1 vuông vắn */}
       <div 
@@ -44,6 +44,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect }) => {
         style={{ position: 'relative', width: '100%', paddingTop: '100%', backgroundColor: '#f3f4f6', cursor: 'pointer' }}
       >
         <img 
+          className="img-zoom"
           src={shoe.imageUrl || "https://placehold.co/400x400?text=No+Image"} 
           alt={shoe.name}
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
@@ -88,6 +89,7 @@ export const ShoeCard: React.FC<ShoeCardProps> = ({ shoe, onSelect }) => {
         {/* Buttons */}
         <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
           <button 
+            className="btn-hover"
             onClick={() => onSelect(shoe.id)}
             style={{
               padding: '8px 0',

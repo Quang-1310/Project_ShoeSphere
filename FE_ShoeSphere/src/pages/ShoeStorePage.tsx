@@ -35,7 +35,7 @@ export const ShoeStorePage: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', color: '#1f2937', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', color: '#1f2937' }}>
       <Header onAuthWarning={handleAuthWarning} />
 
       {/* Main Layout container */}
