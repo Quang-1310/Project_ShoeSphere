@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -21,14 +20,20 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
 
   useEffect(() => {
     if (!user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCartCount(0);
       return;
     }
 
-    getCart()
-      .then((items) => setCartCount(items.reduce((total, item) => total + item.quantity, 0)))
-      .catch(() => setCartCount(0));
+    const fetchCart = () => {
+      getCart()
+        .then((items) => setCartCount(items.length))
+        .catch(() => setCartCount(0));
+    };
+
+    fetchCart();
+
+    window.addEventListener('cartUpdated', fetchCart);
+    return () => window.removeEventListener('cartUpdated', fetchCart);
   }, [user]);
 
   const handleLogout = async () => {
@@ -57,7 +62,6 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
   };
   return (
     <header style={{
-      // sticky: 'top',
       position: 'sticky',
       top: 0,
       zIndex: 40,
@@ -72,7 +76,6 @@ export const Header: React.FC<HeaderProps> = ({ onAuthWarning }) => {
         height: '64px',
         display: 'flex',
         alignItems: 'center',
-        // justifyContent: 'between',
         justifyContent: 'space-between'
       }}>
         {/* Logo */}

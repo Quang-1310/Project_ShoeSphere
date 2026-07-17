@@ -28,6 +28,10 @@ const Login: React.FC = () => {
             // 3. Điều hướng dựa theo chuỗi Role duy nhất trả về từ Backend
             if (userProfile.role === "ADMIN") {
               navigate("/admin/products");
+            } else if (userProfile.role === "WAREHOUSE_MANAGEMENT") {
+              navigate("/warehouse");
+            } else if (userProfile.role === "SHIPPER") {
+              navigate("/shipper");
             } else {
               navigate("/");
             }

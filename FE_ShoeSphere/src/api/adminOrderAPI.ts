@@ -51,7 +51,7 @@ export const getAdminOrdersThunk = createAsyncThunk<
       if (status) query.append('status', status);
       if (orderId) query.append('orderId', orderId.toString());
 
-      const response = await configAPI.get(`/api/v1/admin/orders?${query.toString()}`);
+      const response = await configAPI.get(`/admin/orders?${query.toString()}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -69,8 +69,11 @@ export const confirmAdminOrderThunk = createAsyncThunk<
   'adminOrder/confirmOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      const response = await configAPI.patch(`/api/v1/admin/orders/${orderId}/confirm`);
-      return response.data.data;
+      const response = await configAPI.patch(`/admin/orders/${orderId}/confirm`);
+      if (response.data?.success) {
+        return response.data.data;
+      }
+      return rejectWithValue(response.data?.message || 'Không thể duyệt đơn hàng này.');
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || 'Không thể duyệt đơn hàng này.'

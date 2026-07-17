@@ -103,8 +103,8 @@ public class OrderServiceImpl implements OrderService {
   Order o = orders.findByIdAndUser(id, u(email))
           .orElseThrow(() -> new IllegalArgumentException("Order not found."));
 
-  if (o.getStatus() != OrderStatus.CONFIRMED) {
-   throw new IllegalArgumentException("Only confirmed orders can be cancelled.");
+  if (o.getStatus() != OrderStatus.PENDING_CONFIRMATION && o.getStatus() != OrderStatus.CONFIRMED) {
+   throw new IllegalArgumentException("Only pending or confirmed orders can be cancelled.");
   }
 
   o.setStatus(OrderStatus.CANCELLED);

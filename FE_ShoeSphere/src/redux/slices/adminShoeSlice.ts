@@ -1,25 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { getAdminShoesThunk, deleteAdminShoeThunk } from '../../api/adminShoeAPI';
 
-interface ShoeResponseDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  brand: string;
-  stockQuantity: number;
-  imageUrl: string;
-  status: boolean;
-}
-
-interface PageResponseDTO {
-  content: ShoeResponseDTO[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  isLast: boolean;
-}
+import type { ShoeResponseDTO, PageResponseDTO } from '../../pages/type';
 
 interface AdminShoeState {
   shoes: ShoeResponseDTO[];
@@ -58,7 +40,7 @@ const adminShoeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(getAdminShoesThunk.fulfilled, (state, action: PayloadAction<PageResponseDTO>) => {
+      .addCase(getAdminShoesThunk.fulfilled, (state, action: PayloadAction<PageResponseDTO<ShoeResponseDTO>>) => {
         state.loading = false;
         state.shoes = action.payload.content;
         state.totalPages = action.payload.totalPages;

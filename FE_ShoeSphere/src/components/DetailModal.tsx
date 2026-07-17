@@ -20,6 +20,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ shoe, onClose, onAuthW
     if (!user) return onAuthWarning('Thêm vào giỏ hàng'); 
     if (!selectedSize) return void import('sweetalert2').then(Swal => Swal.default.fire('Vui lòng chọn size'));
     await addCartItem(shoe.id, selectedSize); 
+    window.dispatchEvent(new Event('cartUpdated'));
     import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'success', title: 'Thêm thành công', timer: 1500, showConfirmButton: false }));
   };
   const buyNow = async () => { 

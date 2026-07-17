@@ -9,41 +9,46 @@ import { AdminOrderPage } from "../pages/AdminOrderPage";
 import { DeliveryProfilePage } from "../pages/DeliveryProfilePage";
 import { CartPage } from "../pages/CartPage";
 import { MyOrdersPage } from "../pages/MyOrdersPage";
+import { StaffLayout } from "../layout/StaffLayout";
+import { WarehousePage } from "../pages/WarehousePage";
+import { ShipperPage } from "../pages/ShipperPage";
 
 export const index = createBrowserRouter([
-    {path:"/register", element:<Register/>},
-    {path: "/login", element: <Login /> },
-    {path: "/", element: <ShoeStorePage/>},
-    {path: "/shoes", element: <ShoeStorePage/>},
-    {path: "/delivery-profile", element: <DeliveryProfilePage />},
-    {path: "/cart", element: <CartPage />},
-    {path: "/my-orders", element: <MyOrdersPage />},
+    { path: "/register", element: <Register /> },
+    { path: "/login", element: <Login /> },
+    { path: "/", element: <ShoeStorePage /> },
+    { path: "/shoes", element: <ShoeStorePage /> },
+    { path: "/delivery-profile", element: <DeliveryProfilePage /> },
+    { path: "/cart", element: <CartPage /> },
+    { path: "/my-orders", element: <MyOrdersPage /> },
 
+    // ============ Admin routes ============
     {
-    element: <AdminLayout />, // Khung Layout chứa Sidebar bên trái và tự động check Token
-    children: [
-      {
-        path: "/admin",
-        element: <Navigate to="/admin/products" replace /> // Nếu vào thẳng /admin thì tự điều hướng sang quản lý sản phẩm
-      },
-      {
-        path: "/admin/products",
-        element: <AdminProductPage /> // Trang quản lý sản phẩm
-      },
-      {
-        path: "/admin/accounts",
-        element: <AdminAccountPage />
-      },
-      {
-        path: "/admin/orders",
-        element: <AdminOrderPage />
-      }
-    ]
-  },
+        element: <AdminLayout />,
+        children: [
+            { path: "/admin", element: <Navigate to="/admin/products" replace /> },
+            { path: "/admin/products", element: <AdminProductPage /> },
+            { path: "/admin/accounts", element: <AdminAccountPage /> },
+            { path: "/admin/orders", element: <AdminOrderPage /> },
+        ],
+    },
 
-  // ================= 3. CATCH ALL ROUTE (XỬ LÝ ĐƯỜNG DẪN SAI) =================
-  { 
-    path: "*", 
-    element: <Navigate to="/" replace /> 
-  }
-])
+    // ============ Warehouse routes ============
+    {
+        element: <StaffLayout />,
+        children: [
+            { path: "/warehouse", element: <WarehousePage /> },
+        ],
+    },
+
+    // ============ Shipper routes ============
+    {
+        element: <StaffLayout />,
+        children: [
+            { path: "/shipper", element: <ShipperPage /> },
+        ],
+    },
+
+    // ============ Catch-all ============
+    { path: "*", element: <Navigate to="/" replace /> },
+]);

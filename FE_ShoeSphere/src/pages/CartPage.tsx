@@ -28,10 +28,9 @@ export const CartPage = () => {
       .reduce((s, x) => s + x.price * x.quantity, 0);
   }, [items, selected]);
 
-  // Xử lý thay đổi số lượng
   const qty = async (x: CartItem, q: number) => {
     if (q < 1) return;
-    await updateCartItem(x.id, x.shoeId, q);
+    await updateCartItem(x.id, x.shoeId, x.size, q);
     load();
   };
 
@@ -44,8 +43,21 @@ export const CartPage = () => {
 
   // Xử lý xóa sản phẩm khỏi giỏ hàng
   const handleRemove = async (id: number) => {
-    await removeCartItem(id);
-    load();
+    const result = await Swal.fire({
+      title: 'Xóa sản phẩm?',
+      text: 'Bạn có chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng không?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy',
+      confirmButtonColor: '#ef4444'
+    });
+    
+    if (result.isConfirmed) {
+      await removeCartItem(id);
+      window.dispatchEvent(new Event('cartUpdated'));
+      load();
+    }
   };
 
   // Xử lý khi nhấn nút Đặt hàng
@@ -53,10 +65,10 @@ export const CartPage = () => {
     if (!selected.length) return void Swal.fire('Hãy chọn sản phẩm');
     try { 
       await createOrder(selected); 
-      await Swal.fire({ icon: 'success', title: 'Đặt hàng thành công' }); 
+      await Swal.fire({ icon: 'success', title: 'Đặt hàng thành công', timer: 1800, showConfirmButton: false }); 
       nav('/my-orders'); 
     }
-    catch (error: any) { 
+    catch (error) { 
       const msg = error.response?.data?.message || String(error);
       if (msg.includes("Delivery information is required") || msg.includes("địa chỉ")) {
         Swal.fire({ 
@@ -95,7 +107,13 @@ export const CartPage = () => {
           />
 
           <img
-            src={x.imageUrl || 'https://placehold.co/140x140?text=No+Image'}
+            src={
+              x.imageUrl
+                ? x.imageUrl.startsWith('http')
+                  ? x.imageUrl
+                  : `https://res.cloudinary.com/dq3ocm9yl/image/upload/${x.imageUrl}`
+                : 'https://placehold.co/140x140?text=No+Image'
+            }
             alt={x.name}
             onError={(event) => { event.currentTarget.src = 'https://placehold.co/140x140?text=No+Image'; }}
             style={{ width: 84, height: 84, objectFit: 'cover', borderRadius: 8, background: '#f3f4f6' }}

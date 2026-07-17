@@ -4,11 +4,12 @@ import type { ShoeResponseDTO } from "../pages/type";
 
 interface ModalProps {
   editingProduct: ShoeResponseDTO | null;
+  isSubmitting?: boolean;
   onClose: () => void;
   onSubmit: (formData, file: File | null) => void;
 }
 
-export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, onSubmit }) => {
+export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, isSubmitting = false, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: editingProduct?.name || '',
     brand: editingProduct?.brand || '',
@@ -121,8 +122,10 @@ export const AdminShoeModal: React.FC<ModalProps> = ({ editingProduct, onClose, 
             <input type="file" accept=".png, .jpg, .jpeg" onChange={handleFileChange} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px', borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-            <button type="button" onClick={onClose} style={{ padding: '8px 16px', backgroundColor: '#9ca3af', color: '#fff', border: 'none', borderRadius: '4px' }}>Hủy</button>
-            <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold' }}>Lưu</button>
+            <button type="button" onClick={onClose} disabled={isSubmitting} style={{ padding: '8px 16px', backgroundColor: '#9ca3af', color: '#fff', border: 'none', borderRadius: '4px', opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>Hủy</button>
+            <button type="submit" disabled={isSubmitting} style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+              {isSubmitting ? 'Đang lưu...' : 'Lưu'}
+            </button>
           </div>
         </form>
       </div>

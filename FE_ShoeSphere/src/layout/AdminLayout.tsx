@@ -24,8 +24,8 @@ export const AdminLayout: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // 2. Đang trong quá trình chờ API /auth/me trả về dữ liệu người dùng
-  if (loading) {
+  // 2. Đang trong quá trình chờ API /auth/me trả về dữ liệu
+  if (loading || (!user && token)) {
     return (
       <div style={{ padding: '32px', fontFamily: 'sans-serif', color: '#64748b' }}>
         ⏳ Đang xác thực thông tin quyền quản trị...
@@ -33,10 +33,13 @@ export const AdminLayout: React.FC = () => {
     );
   }
 
-  // 3. Đã có dữ liệu user nhưng quyền (role) KHÔNG PHẢI "ADMIN" -> Đá về trang chủ Client
-  if (user && user.role !== 'ADMIN') {
-    return <Navigate to="/" replace />;
-  }
+  // Không lấy được user sau khi fetch xong → token hết hạn
+  if (!user) return <Navigate to="/login" replace />;
+
+  // 3. Đã có dữ liệu user nhưng quyền (role) KHÔNG PHẢI "ADMIN" → điều hướng đúng trang
+  if (user.role === 'WAREHOUSE_MANAGEMENT') return <Navigate to="/warehouse" replace />;
+  if (user.role === 'SHIPPER') return <Navigate to="/shipper" replace />;
+  if (user.role !== 'ADMIN') return <Navigate to="/" replace />;
 
   // 4. Hợp lệ -> Hiển thị Sidebar bên trái và nội dung trang Admin bên phải
   return (

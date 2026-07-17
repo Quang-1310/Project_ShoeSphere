@@ -22,6 +22,7 @@ export const AdminProductPage: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [localSearch, setLocalSearch] = useState(searchTerm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -81,12 +82,13 @@ export const AdminProductPage: React.FC = () => {
   };
 
   const handleFormSubmit = (fields, file: File | null) => {
+    setIsSubmitting(true);
     const multipartData = new FormData();
     const shoeRequestDTO = {
       name: fields.name,
       brand: fields.brand,
       price: parseFloat(fields.price),
-      sizes: fields.sizes.map((s: any) => ({ size: parseInt(s.size), stockQuantity: parseInt(s.stockQuantity) })),
+      sizes: fields.sizes.map((s) => ({ size: parseInt(s.size), stockQuantity: parseInt(s.stockQuantity) })),
       description: fields.description,
       status: fields.status,
     };
@@ -118,7 +120,8 @@ export const AdminProductPage: React.FC = () => {
             text: err || "Đã xảy ra lỗi trong quá trình thêm mới.",
             icon: "error",
           });
-        });
+        })
+        .finally(() => setIsSubmitting(false));
     } else {
       // Update (PUT)
       dispatch(updateAdminShoeThunk({ id: selectedProduct.id, multipartData }))
@@ -140,7 +143,8 @@ export const AdminProductPage: React.FC = () => {
             text: err || "Đã xảy ra lỗi trong quá trình cập nhật.",
             icon: "error",
           });
-        });
+        })
+        .finally(() => setIsSubmitting(false));
     }
   };
 
@@ -239,6 +243,7 @@ export const AdminProductPage: React.FC = () => {
       {isModalOpen && (
         <AdminShoeModal
           editingProduct={selectedProduct}
+          isSubmitting={isSubmitting}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleFormSubmit}
         />

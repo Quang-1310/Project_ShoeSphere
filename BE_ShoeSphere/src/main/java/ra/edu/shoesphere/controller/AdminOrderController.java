@@ -70,6 +70,7 @@ public class AdminOrderController {
     }
 
     @PatchMapping("/{id}/confirm")
+    @org.springframework.transaction.annotation.Transactional(readOnly = false)
     public ResponseEntity<ApiDataResponse<OrderResponseDTO>> confirm(@PathVariable Long id) {
         Order o = orders.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
         if (o.getStatus() != OrderStatus.PENDING_CONFIRMATION) {
