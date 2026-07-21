@@ -11,6 +11,10 @@ export const AdminSidebar: React.FC = () => {
   // Định nghĩa danh sách các menu
   const menuItems = [
     {
+      text: '📊 Thống kê & Báo cáo',
+      path: '/admin/statistics',
+    },
+    {
       text: '👟 Quản lý sản phẩm',
       path: '/admin/products',
     },
@@ -23,6 +27,7 @@ export const AdminSidebar: React.FC = () => {
       path: '/admin/accounts', // Tính năng mở/khóa tài khoản làm sau
     },
   ];
+
 
   const handleLogout = async () => {
     const result = await Swal.fire({

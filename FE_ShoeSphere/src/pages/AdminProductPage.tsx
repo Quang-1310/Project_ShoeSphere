@@ -10,6 +10,7 @@ import {
 import { setCurrentPage, setSearchTerm } from "../redux/slices/adminShoeSlice";
 import { AdminShoeTable } from "../components/AdminShoeTable";
 import { AdminShoeModal } from "../components/AdminShoeModal";
+import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Swal from "sweetalert2";
 
 export const AdminProductPage: React.FC = () => {
@@ -28,13 +29,14 @@ export const AdminProductPage: React.FC = () => {
     dispatch(
       getAdminShoesThunk({
         page: currentPage,
-        size: 5,
+        size: 8,
         name: searchTerm || undefined,
       })
     );
   }, [dispatch, currentPage, searchTerm]);
 
   const handleSearchSubmit = () => {
+    dispatch(setCurrentPage(1));
     dispatch(setSearchTerm(localSearch));
   };
 
@@ -48,18 +50,19 @@ export const AdminProductPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number, name: string) => {
     Swal.fire({
-      title: "Bạn có chắc chắn muốn xóa?",
-      text: "Hành động này sẽ thực hiện xóa mềm sản phẩm này!",
+      title: "Xác nhận xóa mềm sản phẩm?",
+      text: `Sản phẩm "${name}" sẽ bị chuyển trạng thái thành đã xóa.`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Đồng ý, xóa!",
-      cancelButtonText: "Hủy"
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#475569",
+      confirmButtonText: "Xóa sản phẩm",
+      cancelButtonText: "Hủy",
+      background: "#1e293b",
+      color: "#f8fafc",
     }).then((result) => {
-      // Sửa lỗi: Thêm bọc ngoặc nhọn {} để gom nhóm logic khi nhấn Confirm
       if (result.isConfirmed) {
         dispatch(deleteAdminShoeThunk(id))
           .unwrap()
@@ -68,13 +71,18 @@ export const AdminProductPage: React.FC = () => {
               title: "Đã xóa!",
               text: "Sản phẩm đã được xóa mềm thành công.",
               icon: "success",
+              background: "#1e293b",
+              color: "#f8fafc",
             });
+            dispatch(getAdminShoesThunk({ page: currentPage, size: 8 }));
           })
           .catch((err) => {
             Swal.fire({
               title: "Lỗi!",
               text: err || "Không thể xóa sản phẩm này.",
               icon: "error",
+              background: "#1e293b",
+              color: "#f8fafc",
             });
           });
       }
@@ -109,16 +117,20 @@ export const AdminProductPage: React.FC = () => {
             text: "Thêm mới sản phẩm thành công!",
             icon: "success",
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            background: "#1e293b",
+            color: "#f8fafc",
           });
           setIsModalOpen(false);
-          dispatch(getAdminShoesThunk({ page: currentPage, size: 5 }));
+          dispatch(getAdminShoesThunk({ page: currentPage, size: 8 }));
         })
         .catch((err) => {
           Swal.fire({
             title: "Lỗi thêm mới!",
             text: err || "Đã xảy ra lỗi trong quá trình thêm mới.",
             icon: "error",
+            background: "#1e293b",
+            color: "#f8fafc",
           });
         })
         .finally(() => setIsSubmitting(false));
@@ -132,16 +144,20 @@ export const AdminProductPage: React.FC = () => {
             text: "Cập nhật sản phẩm thành công!",
             icon: "success",
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            background: "#1e293b",
+            color: "#f8fafc",
           });
           setIsModalOpen(false);
-          dispatch(getAdminShoesThunk({ page: currentPage, size: 5 }));
+          dispatch(getAdminShoesThunk({ page: currentPage, size: 8 }));
         })
         .catch((err) => {
           Swal.fire({
             title: "Lỗi cập nhật!",
             text: err || "Đã xảy ra lỗi trong quá trình cập nhật.",
             icon: "error",
+            background: "#1e293b",
+            color: "#f8fafc",
           });
         })
         .finally(() => setIsSubmitting(false));
@@ -149,62 +165,108 @@ export const AdminProductPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "32px", fontFamily: "sans-serif" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "24px",
-        }}
-      >
-        <h2 style={{ margin: 0, color: "#0f172a" }}>
-          QUẢN LÝ DANH SÁCH SẢN PHẨM
-        </h2>
+    <div style={{ padding: "32px", backgroundColor: "#0f172a", minHeight: "100vh", color: "#f8fafc", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      {/* Header Bar */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
+        <div>
+          <h1 style={{ fontSize: "28px", fontWeight: "800", margin: 0, letterSpacing: "-0.5px", background: "linear-gradient(90deg, #38bdf8, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            👟 Quản Lý Danh Sách Sản Phẩm
+          </h1>
+          <p style={{ margin: "6px 0 0 0", color: "#94a3b8", fontSize: "14px" }}>
+            Quản lý kho hàng, cập nhật thông tin sản phẩm, đơn giá và danh mục giày ShoeSphere
+          </p>
+        </div>
+
         <button
           onClick={handleOpenAdd}
           style={{
-            padding: "10px 20px",
-            backgroundColor: "#10b981",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 22px",
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             color: "#fff",
             border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
+            borderRadius: "12px",
             fontWeight: "bold",
+            fontSize: "15px",
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(16,185,129,0.35)",
+            transition: "all 0.2s ease"
           }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
         >
-          + Thêm sản phẩm
+          <Plus size={20} />
+          <span>Thêm Sản Phẩm Mới</span>
         </button>
       </div>
 
-      <div style={{ marginBottom: "20px", display: "flex", gap: "8px" }}>
-        <input
-          type="text"
-          placeholder="Tìm tên giày..."
-          value={localSearch}
-          onChange={(e) => setLocalSearch(e.target.value)}
-          style={{
-            padding: "8px",
-            width: "250px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
+      {/* Filter / Search Bar */}
+      <div style={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "16px", padding: "20px", marginBottom: "28px", display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ position: "relative", flex: 1, minWidth: "280px" }}>
+          <Search size={18} color="#94a3b8" style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+          <input
+            type="text"
+            placeholder="Tìm theo tên sản phẩm giày..."
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+            style={{
+              width: "100%",
+              padding: "10px 14px 10px 42px",
+              backgroundColor: "#0f172a",
+              border: "1px solid #334155",
+              borderRadius: "10px",
+              color: "#f8fafc",
+              fontSize: "14px",
+              outline: "none"
+            }}
+          />
+        </div>
+
         <button
           onClick={handleSearchSubmit}
           style={{
-            padding: "8px 16px",
+            padding: "10px 20px",
             backgroundColor: "#2563eb",
             color: "#fff",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "10px",
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "background 0.2s"
           }}
         >
-          Tìm
+          Tìm kiếm
         </button>
+
+        {searchTerm && (
+          <button
+            onClick={() => {
+              setLocalSearch("");
+              dispatch(setSearchTerm(""));
+            }}
+            style={{
+              padding: "10px 16px",
+              backgroundColor: "#334155",
+              color: "#cbd5e1",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer"
+            }}
+          >
+            Xóa lọc
+          </button>
+        )}
       </div>
 
+      {/* Product Table Container */}
       {loading ? (
-        <p>Đang tải dữ liệu...</p>
+        <div style={{ textAlign: "center", padding: "80px 0", color: "#94a3b8" }}>
+          <div style={{ display: "inline-block", width: "40px", height: "40px", border: "4px solid #334155", borderTopColor: "#38bdf8", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
+          <p style={{ marginTop: "16px" }}>Đang tải danh sách sản phẩm...</p>
+        </div>
       ) : (
         <AdminShoeTable
           products={shoes}
@@ -213,32 +275,50 @@ export const AdminProductPage: React.FC = () => {
         />
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "20px",
-          gap: "8px",
-        }}
-      >
-        <button
-          disabled={currentPage === 1}
-          onClick={() => dispatch(setCurrentPage(currentPage - 1))}
-          style={{ padding: "6px 12px" }}
-        >
-          Trước
-        </button>
-        <span style={{ alignSelf: "center" }}>
-          Trang {currentPage} / {totalPages}
-        </span>
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => dispatch(setCurrentPage(currentPage + 1))}
-          style={{ padding: "6px 12px" }}
-        >
-          Sau
-        </button>
-      </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "28px", gap: "10px" }}>
+          <button
+            disabled={currentPage === 1}
+            onClick={() => dispatch(setCurrentPage(currentPage - 1))}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "8px 14px",
+              backgroundColor: currentPage === 1 ? "#1e293b" : "#334155",
+              color: currentPage === 1 ? "#64748b" : "#f8fafc",
+              border: "1px solid #334155",
+              borderRadius: "8px",
+              cursor: currentPage === 1 ? "not-allowed" : "pointer"
+            }}
+          >
+            <ChevronLeft size={18} /> Trước
+          </button>
+          
+          <span style={{ fontSize: "14px", color: "#cbd5e1", fontWeight: 600, padding: "0 10px" }}>
+            Trang {currentPage} / {totalPages}
+          </span>
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => dispatch(setCurrentPage(currentPage + 1))}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "8px 14px",
+              backgroundColor: currentPage === totalPages ? "#1e293b" : "#334155",
+              color: currentPage === totalPages ? "#64748b" : "#f8fafc",
+              border: "1px solid #334155",
+              borderRadius: "8px",
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+            }}
+          >
+            Sau <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
 
       {isModalOpen && (
         <AdminShoeModal
@@ -248,6 +328,13 @@ export const AdminProductPage: React.FC = () => {
           onSubmit={handleFormSubmit}
         />
       )}
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

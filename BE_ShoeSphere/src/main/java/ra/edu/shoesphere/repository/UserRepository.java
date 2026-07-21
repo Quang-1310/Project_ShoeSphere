@@ -32,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     Optional<User> findByIdAndRoleAndIsDeletedFalse(Long id, RoleEnum role);
+
+    Long countByRoleAndIsDeletedFalse(RoleEnum role);
 }
+

@@ -28,4 +28,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     org.springframework.data.domain.Page<Order> findAllBy(org.springframework.data.domain.Pageable pageable);
 
     List<Order> findByStatusInOrderByCreatedAtDesc(List<ra.edu.shoesphere.model.entity.enums.OrderStatus> statuses);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status != ra.edu.shoesphere.model.entity.enums.OrderStatus.CANCELLED")
+    java.math.BigDecimal sumTotalRevenue();
+
+    Long countByStatus(ra.edu.shoesphere.model.entity.enums.OrderStatus status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT MONTH(o.createdAt) as month, COALESCE(SUM(o.totalAmount), 0) as revenue, COUNT(o.id) as orderCount FROM Order o WHERE YEAR(o.createdAt) = :year AND o.status != ra.edu.shoesphere.model.entity.enums.OrderStatus.CANCELLED GROUP BY MONTH(o.createdAt) ORDER BY MONTH(o.createdAt)")
+    List<Object[]> getMonthlyRevenueByYear(@org.springframework.data.repository.query.Param("year") int year);
 }
+

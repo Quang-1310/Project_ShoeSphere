@@ -6,6 +6,7 @@ import { AdminProductPage } from "../pages/AdminProductPage";
 import { AdminLayout } from "../layout/AdminLayout";
 import { AdminAccountPage } from "../pages/AdminAccountPage";
 import { AdminOrderPage } from "../pages/AdminOrderPage";
+import { AdminStatisticsPage } from "../pages/AdminStatisticsPage";
 import { DeliveryProfilePage } from "../pages/DeliveryProfilePage";
 import { CartPage } from "../pages/CartPage";
 import { MyOrdersPage } from "../pages/MyOrdersPage";
@@ -26,12 +27,14 @@ export const index = createBrowserRouter([
     {
         element: <AdminLayout />,
         children: [
-            { path: "/admin", element: <Navigate to="/admin/products" replace /> },
+            { path: "/admin", element: <Navigate to="/admin/statistics" replace /> },
+            { path: "/admin/statistics", element: <AdminStatisticsPage /> },
             { path: "/admin/products", element: <AdminProductPage /> },
             { path: "/admin/accounts", element: <AdminAccountPage /> },
             { path: "/admin/orders", element: <AdminOrderPage /> },
         ],
     },
+
 
     // ============ Warehouse routes ============
     {
