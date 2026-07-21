@@ -36,7 +36,8 @@ public class OrderController {
                           .map(i -> OrderItemResponseDTO.builder()
                                   .id(i.getId())
                                   .shoeName(i.getShoeName())
-                                  .imageUrl(i.getShoe().getImageUrl())
+                                  .imageUrl(i.getShoe() != null ? i.getShoe().getImageUrl() : null)
+
                                   .unitPrice(i.getUnitPrice())
                                   .size(i.getSize())
                                   .quantity(i.getQuantity())

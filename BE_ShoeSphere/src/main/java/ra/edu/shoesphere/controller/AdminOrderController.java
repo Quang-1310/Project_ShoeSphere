@@ -101,10 +101,12 @@ public class AdminOrderController {
                 .items(o.getOrderItems().stream().map(i -> OrderItemResponseDTO.builder()
                         .id(i.getId())
                         .shoeName(i.getShoeName())
+                        .imageUrl(i.getShoe() != null ? i.getShoe().getImageUrl() : null)
                         .unitPrice(i.getUnitPrice())
                         .quantity(i.getQuantity())
                         .size(i.getSize())
                         .build()).collect(Collectors.toList()))
+
                 .build();
     }
 
